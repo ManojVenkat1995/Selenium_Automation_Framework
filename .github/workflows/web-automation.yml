@@ -30,6 +30,11 @@ jobs:
           cd qa-web-automation
           mvn test -Dsuite=testng-web.xml
 
+      - name: Generate Allure HTML Report
+        run: |
+          cd qa-web-automation
+          mvn allure:report
+
       - name: Upload Allure Results Artifact (optional)
         if: always()
         uses: actions/upload-artifact@v4
@@ -37,11 +42,11 @@ jobs:
           name: allure-results
           path: qa-web-automation/target/allure-results
 
+
+
       - name: Publish Allure Report to GitHub Pages
-        uses: erikzaadi/allure-report@v2
-        if: always()
+        uses: peaceiris/actions-gh-pages@v3
         with:
-            WORKING_DIR: qa-web-automation/target/allure-results
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            PUBLISH_BRANCH: gh-pages
-            REPORT_PATH: /
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./qa-web-automation/target/site/allure-maven-plugin
+          publish_branch: gh-pages
