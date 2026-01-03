@@ -25,11 +25,13 @@ public class BaseTest {
 
     @BeforeMethod(alwaysRun = true)
     @Parameters({"browser"})
-    public void setUp(@Optional String browser) {
+    public void setUp(@Optional("chrome") String browser) {  // @Optional provides default
         log = LoggerUtils.getLogger(this.getClass());
 
         String defaultBrowser = FrameworkConfig.getOrDefault("defaultBrowser", "chrome");
-        String browserToUse = (browser == null || browser.isEmpty()) ? defaultBrowser : browser;
+        String browserToUse = (browser == null || browser.trim().isEmpty())
+                ? defaultBrowser
+                : browser.trim();
 
         log.info("Starting test. Browser: {}", browserToUse);
 

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="OrangeHRM Web Automation Suite"
-    parallel="tests"
-    thread-count="2">
+       parallel="tests"
+       thread-count="2">
 
     <listeners>
         <listener class-name="com.framework.listeners.TestNGListener"/>
@@ -11,7 +11,7 @@
     <parameter name="env" value="dev"/>
 
     <test name="OrangeHRM Chrome Tests">
-        <parameter name="browser" value="${browser}"/>
+        <parameter name="browser" value="chrome"/>
         <classes>
             <class name="com.framework.web.tests.LoginTest"/>
             <class name="com.framework.web.tests.DashboardTest"/>
@@ -19,7 +19,7 @@
     </test>
 
     <test name="OrangeHRM Firefox Tests">
-        <parameter name="browser" value="${browser}"/>
+        <parameter name="browser" value="firefox"/>
         <classes>
             <class name="com.framework.web.tests.LoginTest"/>
             <class name="com.framework.web.tests.DashboardTest"/>
