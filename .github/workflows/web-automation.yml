@@ -38,9 +38,10 @@ jobs:
           path: qa-web-automation/target/allure-results
 
       - name: Publish Allure Report to GitHub Pages
+        uses: erikzaadi/allure-report@v2
         if: always()
-        uses: anshooarora/allure-report@v1.6.0
         with:
-          allureResultsPath: qa-web-automation/target/allure-results
-          ghPages: gh-pages
-          reportTitle: OrangeHRM Web Automation Report
+            WORKING_DIR: qa-web-automation/target/allure-results
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            PUBLISH_BRANCH: gh-pages
+            REPORT_PATH: /
