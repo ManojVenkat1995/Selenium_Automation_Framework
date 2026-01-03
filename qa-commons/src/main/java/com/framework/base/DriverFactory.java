@@ -113,8 +113,12 @@ public class DriverFactory {
             } catch (Exception e) {
                 log.warn("Error while quitting WebDriver", e);
             } finally {
-                driver.remove();
+//                driver.remove();//Written seperately for screenshot issue
             }
         }
+    }
+
+    public static void removeDriver() {
+        driver.remove();
     }
 }
