@@ -6,8 +6,11 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -52,22 +55,66 @@ public class DriverFactory {
             case "chrome":
                 WebDriverManager.chromedriver().setup();
                 ChromeOptions chromeOptions = new ChromeOptions();
-                return new org.openqa.selenium.chrome.ChromeDriver(chromeOptions);
+
+                // CI / Headless optimizations
+                if (isCIEnvironment()) {
+                    chromeOptions.addArguments("--headless=new");
+                    chromeOptions.addArguments("--no-sandbox");
+                    chromeOptions.addArguments("--disable-dev-shm-usage");
+                    chromeOptions.addArguments("--disable-gpu");
+                    chromeOptions.addArguments("--window-size=1920,1080");
+                    chromeOptions.addArguments("--disable-extensions");
+                } else {
+                    chromeOptions.addArguments("--start-maximized");
+                }
+
+                return new ChromeDriver(chromeOptions);
 
             case "firefox":
                 WebDriverManager.firefoxdriver().setup();
                 FirefoxOptions ffOptions = new FirefoxOptions();
-                return new org.openqa.selenium.firefox.FirefoxDriver(ffOptions);
+
+                if (isCIEnvironment()) {
+                    ffOptions.addArguments("--headless");
+                    ffOptions.addArguments("--width=1920");
+                    ffOptions.addArguments("--height=1080");
+                    ffOptions.addArguments("--no-sandbox");
+                } else {
+                    ffOptions.addArguments("--width=1920");
+                    ffOptions.addArguments("--height=1080");
+                }
+
+                return new FirefoxDriver(ffOptions);
 
             case "edge":
                 WebDriverManager.edgedriver().setup();
                 EdgeOptions edgeOptions = new EdgeOptions();
-                return new org.openqa.selenium.edge.EdgeDriver(edgeOptions);
+
+                if (isCIEnvironment()) {
+                    edgeOptions.addArguments("--headless");
+                    edgeOptions.addArguments("--no-sandbox");
+                }
+
+                return new EdgeDriver(edgeOptions);
 
             default:
                 throw new IllegalArgumentException("Unsupported browser: " + browser);
         }
     }
+
+    private static boolean isCIEnvironment() {
+        String[] ciVars = {
+                "CI", "CONTINUOUS_INTEGRATION", "GITHUB_ACTIONS", "JENKINS_URL", "TRAVIS", "CIRCLECI"
+        };
+        for (String var : ciVars) {
+            if (System.getenv(var) != null) {
+                log.info("CI environment detected: {}", var);
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     private static WebDriver createRemoteDriver(String browser) {
         String gridUrl = System.getProperty("gridUrl",

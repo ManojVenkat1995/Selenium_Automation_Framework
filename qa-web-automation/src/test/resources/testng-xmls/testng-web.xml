@@ -1,29 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="OrangeHRM Web Automation Suite"
-       parallel="tests"
-       thread-count="2">
-
+<suite name="OrangeHRM Web Tests" parallel="methods" thread-count="2">
     <listeners>
         <listener class-name="com.framework.listeners.TestNGListener"/>
     </listeners>
 
     <parameter name="env" value="dev"/>
+    <parameter name="browser" value="chrome"/>
 
     <test name="OrangeHRM Chrome Tests">
-        <parameter name="browser" value="chrome"/>
         <classes>
             <class name="com.framework.web.tests.LoginTest"/>
             <class name="com.framework.web.tests.DashboardTest"/>
         </classes>
     </test>
-
-    <test name="OrangeHRM Firefox Tests">
-        <parameter name="browser" value="firefox"/>
-        <classes>
-            <class name="com.framework.web.tests.LoginTest"/>
-            <class name="com.framework.web.tests.DashboardTest"/>
-        </classes>
-    </test>
-
 </suite>
