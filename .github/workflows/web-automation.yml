@@ -11,6 +11,7 @@ on:
     paths:
       - 'qa-web-automation/**'
       - 'qa-commons/**'
+  workflow_dispatch:  # Allows manual trigger
 
 jobs:
   web-chrome:
