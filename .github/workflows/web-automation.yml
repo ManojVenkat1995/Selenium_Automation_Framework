@@ -1,13 +1,19 @@
-name: Web Tests (Chrome)
+name: Web Tests (Chrome + Firefox)
 
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'qa-web-automation/**'
+      - 'qa-commons/**'
   pull_request:
     branches: [ main ]
+    paths:
+      - 'qa-web-automation/**'
+      - 'qa-commons/**'
 
 jobs:
-  web-tests:
+  web-chrome:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,12 +28,48 @@ jobs:
       - name: Build & Install all modules
         run: mvn clean install -DskipTests
 
-      - name: Run Web Tests (Chrome)
+      - name: Run Web Chrome Tests (Headless)
         run: |
           cd qa-web-automation
           mvn test -Dsuite=testng-web.xml
 
-      - name: Generate Allure Report
+      - name: Upload Allure Results (Chrome)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-chrome
+          path: qa-web-automation/target/allure-results/
+
+      - name: Generate Allure Report (Chrome)
+        if: always()
+        uses: simple-elf/allure-report-action@master
+        with:
+          allure_results: qa-web-automation/target/allure-results
+
+  web-firefox:
+    runs-on: ubuntu-latest
+    needs: web-chrome  # Runs after Chrome completes
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build & Install all modules
+        run: mvn clean install -DskipTests
+      - name: Run Web Firefox Tests (Headless)
+        run: |
+          cd qa-web-automation
+          mvn test -Dsuite=testng-web.xml
+      - name: Upload Allure Results (Firefox)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-firefox
+          path: qa-web-automation/target/allure-results/
+      - name: Generate Allure Report (Firefox)
         if: always()
         uses: simple-elf/allure-report-action@master
         with:
