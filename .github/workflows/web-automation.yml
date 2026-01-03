@@ -31,8 +31,7 @@ jobs:
 
       - name: Run Web Chrome Tests
         run: |
-          cd qa-web-automation
-          mvn test -Dsuite=testng-web.xml
+           mvn clean test -pl qa-web-automation -am -Dsuite=testng-web.xml
 
       - name: Output logs on failure
         if: failure()
@@ -60,8 +59,7 @@ jobs:
         run: mvn clean compile -DskipTests
       - name: Run Web Firefox Tests
         run: |
-          cd qa-web-automation
-          mvn test -Dsuite=testng-web.xml -Dbrowser=firefox
+           mvn clean test -pl qa-web-automation -am -Dsuite=testng-web.xml
       - name: Generate Allure Report
         if: always()
         uses: simple-elf/allure-report-action@master
