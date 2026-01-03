@@ -27,11 +27,12 @@ jobs:
 
       - name: Build all modules
         run: |
-          mvn clean compile -DskipTests  # Builds qa-commons first!
+          mvn clean install -DskipTests  # Builds qa-commons first!
 
       - name: Run Web Chrome Tests
         run: |
-           mvn clean test -pl qa-web-automation -am -Dsuite=testng-web.xml
+          cd qa-web-automation
+          mvn test -Dsuite=testng-web.xml
 
       - name: Output logs on failure
         if: failure()
@@ -56,10 +57,11 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Build all modules
-        run: mvn clean compile -DskipTests
+        run: mvn clean install -DskipTests
       - name: Run Web Firefox Tests
         run: |
-           mvn clean test -pl qa-web-automation -am -Dsuite=testng-web.xml
+           cd qa-web-automation
+           mvn test -Dsuite=testng-web.xml
       - name: Generate Allure Report
         if: always()
         uses: simple-elf/allure-report-action@master
