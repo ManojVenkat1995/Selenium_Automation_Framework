@@ -6,11 +6,14 @@ on:
   pull_request:
     branches: [ main ]
   workflow_dispatch:
+
 jobs:
   web-tests:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -19,20 +22,23 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build & Install all modules
+      - name: Build all modules
         run: mvn clean install -DskipTests
 
-      - name: Run Web Tests (Chrome + Firefox Parallel)
+      - name: Run Web Tests (Chrome + Firefox)
         run: |
           cd qa-web-automation
           mvn test -Dsuite=testng-web.xml
 
-      - name: Allure Report
+      - name: Generate Allure Report
         if: always()
-        uses: simple-elf/allure-report-action@master
+        run: |
+          cd qa-web-automation
+          mvn allure:report
+
+      - name: Upload Allure Report
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          allure_results: qa-web-automation/target/allure-results
-          report_title: OrangeHRM Web Tests
-          gh_pages: gh-pages
-          allure_report_version: 2.21.0
-          allure_history: allure-history
+          name: allure-report
+          path: qa-web-automation/target/site/allure-maven
